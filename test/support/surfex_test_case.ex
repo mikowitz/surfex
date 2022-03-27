@@ -43,4 +43,12 @@ defmodule SurfexTestCase do
     assert wav.bits_per_sample == expected_bit_depth
     assert wav.bytes_per_second == expected_sample_rate * wav.block_align
   end
+
+  def hash(file) do
+    File.stream!(file)
+    |> Enum.reduce(:crypto.hash_init(:sha256), fn line, acc ->
+      :crypto.hash_update(acc, line)
+    end)
+    |> :crypto.hash_final()
+  end
 end

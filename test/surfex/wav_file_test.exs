@@ -1,6 +1,8 @@
 defmodule Surfex.WavFileTest do
   use ExUnit.Case, async: true
 
+  alias Surfex.WavFile
+
   import SurfexTestCase
 
   describe "8 bit sample size" do
@@ -45,5 +47,55 @@ defmodule Surfex.WavFileTest do
     assert_pcm_metadata("priv/samples/pcm3222s.wav")
     assert_pcm_metadata("priv/samples/pcm3244m.wav")
     assert_pcm_metadata("priv/samples/pcm3244s.wav")
+  end
+
+  describe "writing to file" do
+    test "writing a read file back directly returns the same file" do
+      wav = WavFile.read("priv/samples/pcm0808m.wav")
+
+      :ok = WavFile.write(wav, "example-pcm0808m.wav")
+
+      wav2 = WavFile.read("example-pcm0808m.wav")
+
+      assert wav == wav2
+
+      :ok = File.rm("example-pcm0808m.wav")
+    end
+
+    test "writing a read stereo file back directly returns the same file" do
+      wav = WavFile.read("priv/samples/pcm0808s.wav")
+
+      :ok = WavFile.write(wav, "example-pcm0808s.wav")
+
+      wav2 = WavFile.read("example-pcm0808s.wav")
+
+      assert wav == wav2
+
+      :ok = File.rm("example-pcm0808s.wav")
+    end
+
+    test "writing a read mono extensible file back directly returns the same file" do
+      wav = WavFile.read("priv/samples/pcm3244m.wav")
+
+      :ok = WavFile.write(wav, "example-pcm3244m.wav")
+
+      wav2 = WavFile.read("example-pcm3244m.wav")
+
+      assert wav == wav2
+
+      :ok = File.rm("example-pcm3244m.wav")
+    end
+
+    test "writing a read stereo extensible file back directly returns the same file" do
+      wav = WavFile.read("priv/samples/pcm2444s.wav")
+
+      :ok = WavFile.write(wav, "example-pcm2444s.wav")
+
+      wav2 = WavFile.read("example-pcm2444s.wav")
+
+      assert wav == wav2
+
+      :ok = File.rm("example-pcm2444s.wav")
+    end
   end
 end

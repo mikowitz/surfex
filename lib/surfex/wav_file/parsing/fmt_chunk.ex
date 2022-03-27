@@ -46,7 +46,7 @@ defmodule Surfex.WavFile.Parsing.FmtChunk do
       bits_per_sample::little-16,
       22::little-16,
       _valid_bits_per_sample::little-16,
-      _channel_mask::little-32,
+      channel_mask::little-32,
       subformat::bytes-size(16),
       rest::binary
     >> = data
@@ -58,6 +58,7 @@ defmodule Surfex.WavFile.Parsing.FmtChunk do
        bytes_per_second: bytes_per_second,
        block_align: block_align,
        bits_per_sample: bits_per_sample,
+       channel_mask: channel_mask,
        subformat: subformat
      }, rest}
   end

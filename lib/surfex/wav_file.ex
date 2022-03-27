@@ -1,5 +1,6 @@
 defmodule Surfex.WavFile do
   import Surfex.WavFile.Parsing
+  import Surfex.WavFile.Writing
 
   defstruct [
     :audio_format,
@@ -9,7 +10,9 @@ defmodule Surfex.WavFile do
     :bytes_per_second,
     :data_size,
     :data,
-    :block_align
+    :block_align,
+    :channel_mask,
+    :subformat
   ]
 
   def read(filename) do
@@ -24,5 +27,15 @@ defmodule Surfex.WavFile do
       |> Map.merge(audio_data)
 
     struct(__MODULE__, wav_data)
+  end
+
+  def write(%__MODULE__{} = wav, filename) do
+    contents = <<
+      construct_riff_header(wav)::binary,
+      construct_fmt_chunk(wav)::binary,
+      construct_audio_data(wav)::binary
+    >>
+
+    File.write(filename, contents)
   end
 end
