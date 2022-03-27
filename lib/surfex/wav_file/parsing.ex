@@ -10,46 +10,28 @@ defmodule Surfex.WavFile.Parsing do
   end
 
   def parse_fmt_chunk(data) do
-    <<
-      "fmt "::binary,
-      16::little-32,
-      audio_format::little-16,
-      num_channels::little-16,
-      sample_rate::little-32,
-      bytes_per_second::little-32,
-      block_align::little-16,
-      bits_per_sample::little-16,
-      rest::binary
-    >> = data
-
-    fmt_data = %{
-      audio_format: audio_format,
-      num_channels: num_channels,
-      sample_rate: sample_rate,
-      bits_per_sample: bits_per_sample,
-      bytes_per_second: bytes_per_second,
-      block_align: block_align
-    }
-
-    if check_fmt_values(fmt_data) do
-      {:ok, fmt_data, rest}
-    else
-      {:error, "error parsing format chunk"}
-    end
+    Surfex.WavFile.Parsing.FmtChunk.parse_fmt_chunk(data)
   end
 
   def parse_audio_data(data) do
     <<
       "data"::binary,
       data_size::little-32,
-      data::binary
+      rest::binary
     >> = data
 
-    if check_audio_data_size(data_size, data) do
-      {:ok, %{data: data, data_size: data_size}}
-    else
-      {:error, "incorrect audio data size"}
-    end
+    <<
+      audio_data::bytes-size(data_size),
+      _rest::binary
+    >> = rest
+
+    audio_data =
+      case rem(data_size, 2) do
+        0 -> audio_data
+        1 -> audio_data <> <<0>>
+      end
+
+    {:ok, %{data: audio_data}}
   end
 
   def check_file_length(file_length, data) do

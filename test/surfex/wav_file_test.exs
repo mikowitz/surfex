@@ -1,49 +1,49 @@
 defmodule Surfex.WavFileTest do
   use ExUnit.Case, async: true
 
-  alias Surfex.WavFile
+  import SurfexTestCase
 
   describe "8 bit sample size" do
-    test "8000 Hz mono" do
-      test_wav_file_metadata("priv/samples/pcm0808m.wav", 1, 8000)
-    end
-
-    test "8000 Hz stereo" do
-      test_wav_file_metadata("priv/samples/pcm0808s.wav", 2, 8000)
-    end
-
-    test "11025 Hz mono" do
-      test_wav_file_metadata("priv/samples/pcm0811m.wav", 1, 11025)
-    end
-
-    test "11025 Hz stereo" do
-      test_wav_file_metadata("priv/samples/pcm0811s.wav", 2, 11025)
-    end
-
-    test "22050 Hz mono" do
-      test_wav_file_metadata("priv/samples/pcm0822m.wav", 1, 22050)
-    end
-
-    test "22050 Hz stereo" do
-      test_wav_file_metadata("priv/samples/pcm0822s.wav", 2, 22050)
-    end
-
-    test "44100 Hz mono" do
-      test_wav_file_metadata("priv/samples/pcm0844m.wav", 1, 44100)
-    end
-
-    test "44100 Hz stereo" do
-      test_wav_file_metadata("priv/samples/pcm0844s.wav", 2, 44100)
-    end
+    assert_pcm_metadata("priv/samples/pcm0808m.wav")
+    assert_pcm_metadata("priv/samples/pcm0808s.wav")
+    assert_pcm_metadata("priv/samples/pcm0811m.wav")
+    assert_pcm_metadata("priv/samples/pcm0811s.wav")
+    assert_pcm_metadata("priv/samples/pcm0822m.wav")
+    assert_pcm_metadata("priv/samples/pcm0822s.wav")
+    assert_pcm_metadata("priv/samples/pcm0844m.wav")
+    assert_pcm_metadata("priv/samples/pcm0844s.wav")
   end
 
-  def test_wav_file_metadata(filename, num_channels, sample_rate) do
-    wav = WavFile.read(filename)
+  describe "16 bit sample size" do
+    assert_pcm_metadata("priv/samples/pcm1608m.wav")
+    assert_pcm_metadata("priv/samples/pcm1608s.wav")
+    assert_pcm_metadata("priv/samples/pcm1611m.wav")
+    assert_pcm_metadata("priv/samples/pcm1611s.wav")
+    assert_pcm_metadata("priv/samples/pcm1622m.wav")
+    assert_pcm_metadata("priv/samples/pcm1622s.wav")
+    assert_pcm_metadata("priv/samples/pcm1644m.wav")
+    assert_pcm_metadata("priv/samples/pcm1644s.wav")
+  end
 
-    assert wav.audio_format == 0x01
-    assert wav.num_channels == num_channels
-    assert wav.sample_rate == sample_rate
-    assert wav.bits_per_sample == 8
-    assert wav.bytes_per_second == sample_rate * num_channels
+  describe "24 bit sample size" do
+    assert_pcm_metadata("priv/samples/pcm2408m.wav")
+    assert_pcm_metadata("priv/samples/pcm2408s.wav")
+    assert_pcm_metadata("priv/samples/pcm2411m.wav")
+    assert_pcm_metadata("priv/samples/pcm2411s.wav")
+    assert_pcm_metadata("priv/samples/pcm2422m.wav")
+    assert_pcm_metadata("priv/samples/pcm2422s.wav")
+    assert_pcm_metadata("priv/samples/pcm2444m.wav")
+    assert_pcm_metadata("priv/samples/pcm2444s.wav")
+  end
+
+  describe "32 bit sample size" do
+    assert_pcm_metadata("priv/samples/pcm3208m.wav")
+    assert_pcm_metadata("priv/samples/pcm3208s.wav")
+    assert_pcm_metadata("priv/samples/pcm3211m.wav")
+    assert_pcm_metadata("priv/samples/pcm3211s.wav")
+    assert_pcm_metadata("priv/samples/pcm3222m.wav")
+    assert_pcm_metadata("priv/samples/pcm3222s.wav")
+    assert_pcm_metadata("priv/samples/pcm3244m.wav")
+    assert_pcm_metadata("priv/samples/pcm3244s.wav")
   end
 end
