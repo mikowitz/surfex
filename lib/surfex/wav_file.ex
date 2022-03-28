@@ -1,6 +1,5 @@
 defmodule Surfex.WavFile do
-  import Surfex.WavFile.Parsing
-  import Surfex.WavFile.Writing
+  import Surfex.WavFile.{AudioDataFunctions, Reader, Writer}
 
   defstruct [
     :audio_format,
@@ -37,5 +36,19 @@ defmodule Surfex.WavFile do
     >>
 
     File.write(filename, contents)
+  end
+
+  def process(%__MODULE__{} = wav, processing_function) do
+    channels = split_audio_data_into_channels(wav)
+
+    processed_audio_data = processing_function.(channels)
+
+    audio_data =
+      restore_audio_data_from_channels(
+        processed_audio_data,
+        wav.bits_per_sample
+      )
+
+    %{wav | data: audio_data}
   end
 end

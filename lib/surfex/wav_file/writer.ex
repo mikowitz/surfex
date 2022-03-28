@@ -1,4 +1,4 @@
-defmodule Surfex.WavFile.Writing do
+defmodule Surfex.WavFile.Writer do
   def construct_riff_header(wav) do
     filesize = calculate_filesize(wav)
 

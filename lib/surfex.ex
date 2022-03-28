@@ -1,21 +1,24 @@
 defmodule Surfex do
   alias Surfex.WavFile
-  alias Surfex.WavFile.AudioData.Parsing
 
   def lower_volume(infile, outfile, percentage \\ 0.5) do
-    wav = WavFile.read(infile)
-
-    channels = Parsing.split_audio_data_into_channels(wav)
-
-    channels =
+    process(infile, outfile, fn channels ->
       Enum.map(channels, fn channel ->
         Enum.map(channel, fn i -> round(i * percentage) end)
       end)
+    end)
+  end
 
-    audio_data = Parsing.restore_audio_data_from_channels(channels, wav.bits_per_sample)
+  def reverse(infile, outfile) do
+    process(infile, outfile, fn channels ->
+      Enum.map(channels, &Enum.reverse/1)
+    end)
+  end
 
-    new_wav = %{wav | data: audio_data}
-
-    WavFile.write(new_wav, outfile)
+  defp process(infile, outfile, processing_function) do
+    infile
+    |> WavFile.read()
+    |> WavFile.process(processing_function)
+    |> WavFile.write(outfile)
   end
 end

@@ -1,4 +1,4 @@
-defmodule Surfex.WavFile.AudioData.Parsing do
+defmodule Surfex.WavFile.AudioDataFunctions do
   alias Surfex.WavFile
 
   def split_audio_data_into_channels(%WavFile{data: data, bits_per_sample: bits_per_sample} = wav) do
