@@ -1,7 +1,5 @@
 defmodule Surfex.WavFile.AudioDataFunctions do
-  alias Surfex.WavFile
-
-  def split_audio_data_into_channels(%WavFile{data: data, bits_per_sample: bits_per_sample} = wav) do
+  def split_audio_data_into_channels(%{data: data, bits_per_sample: bits_per_sample} = wav) do
     sample_size = round(wav.bits_per_sample * wav.num_channels / 8)
 
     samples = for <<sample::binary-size(sample_size) <- data>>, do: sample

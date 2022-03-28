@@ -1,5 +1,7 @@
 defmodule Surfex.WavFile do
-  import Surfex.WavFile.{AudioDataFunctions, Reader, Writer}
+  import Surfex.WavFile.{AudioDataFunctions}
+
+  alias Surfex.WavFile.{Reader, Writer}
 
   defstruct [
     :audio_format,
@@ -14,29 +16,8 @@ defmodule Surfex.WavFile do
     :subformat
   ]
 
-  def read(filename) do
-    {:ok, data} = File.read(filename)
-    {:ok, header_data, data} = parse_riff_header(data)
-    {:ok, fmt_data, data} = parse_fmt_chunk(data)
-    {:ok, audio_data} = parse_audio_data(data)
-
-    wav_data =
-      header_data
-      |> Map.merge(fmt_data)
-      |> Map.merge(audio_data)
-
-    struct(__MODULE__, wav_data)
-  end
-
-  def write(%__MODULE__{} = wav, filename) do
-    contents = <<
-      construct_riff_header(wav)::binary,
-      construct_fmt_chunk(wav)::binary,
-      construct_audio_data(wav)::binary
-    >>
-
-    File.write(filename, contents)
-  end
+  defdelegate read(filename), to: Reader
+  defdelegate write(wav, filename), to: Writer
 
   def process(%__MODULE__{} = wav, processing_function) do
     channels = split_audio_data_into_channels(wav)

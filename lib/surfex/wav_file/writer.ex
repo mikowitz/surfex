@@ -1,10 +1,22 @@
 defmodule Surfex.WavFile.Writer do
+  import Surfex.WavFile.BitstringHelpers
+
+  def write(%Surfex.WavFile{} = wav, filename) do
+    contents = <<
+      construct_riff_header(wav)::binary,
+      construct_fmt_chunk(wav)::binary,
+      construct_audio_data(wav)::binary
+    >>
+
+    File.write(filename, contents)
+  end
+
   def construct_riff_header(wav) do
     filesize = calculate_filesize(wav)
 
     <<
       "RIFF"::binary,
-      filesize::little-32,
+      filesize::l32(),
       "WAVE"::binary
     >>
   end
@@ -12,29 +24,29 @@ defmodule Surfex.WavFile.Writer do
   def construct_fmt_chunk(%{audio_format: 0x01} = wav) do
     <<
       "fmt "::binary,
-      16::little-32,
-      1::little-16,
-      wav.num_channels::little-16,
-      wav.sample_rate::little-32,
-      wav.bytes_per_second::little-32,
-      wav.block_align::little-16,
-      wav.bits_per_sample::little-16
+      16::l32(),
+      1::l16(),
+      wav.num_channels::l16(),
+      wav.sample_rate::l32(),
+      wav.bytes_per_second::l32(),
+      wav.block_align::l16(),
+      wav.bits_per_sample::l16()
     >>
   end
 
   def construct_fmt_chunk(%{audio_format: 0xFFFE} = wav) do
     <<
       "fmt "::binary,
-      40::little-32,
-      0xFFFE::little-16,
-      wav.num_channels::little-16,
-      wav.sample_rate::little-32,
-      wav.bytes_per_second::little-32,
-      wav.block_align::little-16,
-      wav.bits_per_sample::little-16,
-      22::little-16,
-      wav.bits_per_sample::little-16,
-      wav.channel_mask::little-32,
+      40::l32(),
+      0xFFFE::l16(),
+      wav.num_channels::l16(),
+      wav.sample_rate::l32(),
+      wav.bytes_per_second::l32(),
+      wav.block_align::l16(),
+      wav.bits_per_sample::l16(),
+      22::l16(),
+      wav.bits_per_sample::l16(),
+      wav.channel_mask::l32(),
       wav.subformat::bytes-size(16)
     >>
   end
@@ -42,7 +54,7 @@ defmodule Surfex.WavFile.Writer do
   def construct_audio_data(wav) do
     <<
       "data"::binary,
-      byte_size(wav.data)::little-32,
+      byte_size(wav.data)::l32(),
       wav.data::binary
     >>
   end
