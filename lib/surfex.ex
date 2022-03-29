@@ -15,7 +15,7 @@ defmodule Surfex do
     end)
   end
 
-  defp process(infile, outfile, processing_function) do
+  def process(infile, outfile, processing_function) do
     infile
     |> WavFile.read()
     |> WavFile.process(processing_function)
