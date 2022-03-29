@@ -133,11 +133,4 @@ defmodule Surfex.WavFile.Reader do
       }) do
     bytes_per_second == block_align * sample_rate
   end
-
-  def check_audio_data_size(data_size, data) do
-    case rem(data_size, 2) do
-      0 -> data_size == byte_size(data)
-      1 -> data_size + 1 == byte_size(data)
-    end
-  end
 end

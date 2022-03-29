@@ -9,7 +9,6 @@ defmodule Surfex.WavFile do
     :sample_rate,
     :bits_per_sample,
     :bytes_per_second,
-    :data_size,
     :data,
     :block_align,
     :channel_mask,
