@@ -1,4 +1,5 @@
 defmodule Surfex.WavFile.AudioDataFunctions do
+  @spec split_audio_data_into_channels(Surfex.WavFile.t()) :: Surfex.channels()
   def split_audio_data_into_channels(%{data: data, bits_per_sample: bits_per_sample} = wav) do
     sample_size = round(wav.bits_per_sample * wav.num_channels / 8)
 
@@ -21,6 +22,7 @@ defmodule Surfex.WavFile.AudioDataFunctions do
     |> Enum.map(&Tuple.to_list/1)
   end
 
+  @spec restore_audio_data_from_channels(Surfex.WavFile.channels(), integer()) :: binary()
   def restore_audio_data_from_channels(channels, bits_per_sample) do
     interleaved_samples =
       Enum.zip(channels)
