@@ -1,3 +1,5 @@
+![CI badge](https://github.com/mikowitz/surfex/actions/workflows/ci.yml/badge.svg)
+
 # Surfex
 
 `Surfex` is a library for manipulating WAV files. It can handle uncompressed
