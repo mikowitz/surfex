@@ -11,7 +11,7 @@ defmodule Surfex.WavFile.Writer do
     File.write(filename, contents)
   end
 
-  def construct_riff_header(wav) do
+  defp construct_riff_header(wav) do
     filesize = calculate_filesize(wav)
 
     <<
@@ -21,7 +21,7 @@ defmodule Surfex.WavFile.Writer do
     >>
   end
 
-  def construct_fmt_chunk(%{audio_format: 0x01} = wav) do
+  defp construct_fmt_chunk(%{audio_format: 0x01} = wav) do
     <<
       "fmt "::binary,
       16::l32(),
@@ -34,7 +34,7 @@ defmodule Surfex.WavFile.Writer do
     >>
   end
 
-  def construct_fmt_chunk(%{audio_format: 0xFFFE} = wav) do
+  defp construct_fmt_chunk(%{audio_format: 0xFFFE} = wav) do
     <<
       "fmt "::binary,
       40::l32(),
@@ -51,7 +51,7 @@ defmodule Surfex.WavFile.Writer do
     >>
   end
 
-  def construct_audio_data(wav) do
+  defp construct_audio_data(wav) do
     <<
       "data"::binary,
       byte_size(wav.data)::l32(),
@@ -59,7 +59,7 @@ defmodule Surfex.WavFile.Writer do
     >>
   end
 
-  def calculate_filesize(wav) do
+  defp calculate_filesize(wav) do
     riff_header_counted_size = 4
 
     fmt_size =

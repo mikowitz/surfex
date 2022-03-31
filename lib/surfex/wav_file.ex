@@ -29,18 +29,20 @@ defmodule Surfex.WavFile do
           channel_mask: integer() | nil,
           subformat: binary() | nil
         }
-  @type channel :: [number()]
-  @type channels :: [channel()]
 
   @doc """
-
+  Attempts to read a WAV file into a `WavFile` struct in memory.
   """
-  @spec read(String.t()) :: __MODULE__.t()
+  @spec read(String.t()) :: __MODULE__.t() | {:error, String.t()}
   defdelegate read(filename), to: Reader
-  @spec write(__MODULE__.t(), String.t()) :: :ok | {:error, File.posix()}
+
+  @doc """
+  Attempts to write a `WavFile` struct to disk at the given filename
+  """
+  @spec write(__MODULE__.t(), String.t()) :: Surfex.file_write_response()
   defdelegate write(wav, filename), to: Writer
 
-  @spec process(__MODULE__.t(), (channels() -> channels())) :: __MODULE__.t()
+  @spec process(__MODULE__.t(), (Surfex.channels() -> Surfex.channels())) :: __MODULE__.t()
   def process(%__MODULE__{} = wav, processing_function) do
     channels = split_audio_data_into_channels(wav)
 

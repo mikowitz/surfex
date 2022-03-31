@@ -2,20 +2,20 @@ defmodule Surfex.WavFile.Reader do
   import Surfex.WavFile.BitstringHelpers
 
   def read(filename) do
-    {:ok, data} = File.read(filename)
-    {:ok, header_data, data} = parse_riff_header(data)
-    {:ok, fmt_data, data} = parse_fmt_chunk(data)
-    {:ok, audio_data} = parse_audio_data(data)
+    with {:ok, data} <- File.read(filename),
+         {:ok, header_data, data} <- parse_riff_header(data),
+         {:ok, fmt_data, data} <- parse_fmt_chunk(data),
+         {:ok, audio_data} <- parse_audio_data(data) do
+      wav_data =
+        header_data
+        |> Map.merge(fmt_data)
+        |> Map.merge(audio_data)
 
-    wav_data =
-      header_data
-      |> Map.merge(fmt_data)
-      |> Map.merge(audio_data)
-
-    struct(Surfex.WavFile, wav_data)
+      struct(Surfex.WavFile, wav_data)
+    end
   end
 
-  def parse_riff_header(data) do
+  defp parse_riff_header(data) do
     <<"RIFF"::binary, file_length::l32(), "WAVE"::binary, rest::binary>> = data
 
     if check_file_length(file_length - 4, rest) do
@@ -25,7 +25,7 @@ defmodule Surfex.WavFile.Reader do
     end
   end
 
-  def parse_fmt_chunk(data) do
+  defp parse_fmt_chunk(data) do
     <<
       "fmt "::binary,
       fmt_chunk_size::l32(),
@@ -33,17 +33,14 @@ defmodule Surfex.WavFile.Reader do
       rest::binary
     >> = data
 
-    {:ok, fmt_data, rest} =
-      case audio_format do
-        0x01 -> parse_pcm_fmt_data(rest, fmt_chunk_size)
-        0xFFFE -> parse_extensible_fmt_data(rest, fmt_chunk_size)
-        _ -> {:error, "can't parse WAV file with audio format #{audio_format}"}
-      end
-
-    {:ok, Map.merge(fmt_data, %{audio_format: audio_format}), rest}
+    case audio_format do
+      0x01 -> parse_pcm_fmt_data(rest, fmt_chunk_size)
+      0xFFFE -> parse_extensible_fmt_data(rest, fmt_chunk_size)
+      _ -> {:error, "can't parse WAV file with audio format #{audio_format}"}
+    end
   end
 
-  def parse_pcm_fmt_data(data, 16) do
+  defp parse_pcm_fmt_data(data, 16) do
     <<
       num_channels::l16(),
       sample_rate::l32(),
@@ -59,11 +56,12 @@ defmodule Surfex.WavFile.Reader do
        sample_rate: sample_rate,
        bytes_per_second: bytes_per_second,
        block_align: block_align,
-       bits_per_sample: bits_per_sample
+       bits_per_sample: bits_per_sample,
+       audio_format: 0x01
      }, rest}
   end
 
-  def parse_extensible_fmt_data(data, 40) do
+  defp parse_extensible_fmt_data(data, 40) do
     <<
       num_channels::l16(),
       sample_rate::l32(),
@@ -85,11 +83,12 @@ defmodule Surfex.WavFile.Reader do
        block_align: block_align,
        bits_per_sample: bits_per_sample,
        channel_mask: channel_mask,
-       subformat: subformat
+       subformat: subformat,
+       audio_format: 0xFFFE
      }, rest}
   end
 
-  def parse_audio_data(data) do
+  defp parse_audio_data(data) do
     <<
       "data"::binary,
       data_size::l32(),
@@ -110,27 +109,7 @@ defmodule Surfex.WavFile.Reader do
     {:ok, %{data: audio_data}}
   end
 
-  def check_file_length(file_length, data) do
+  defp check_file_length(file_length, data) do
     file_length == byte_size(data)
-  end
-
-  def check_fmt_values(fmt_data) do
-    check_block_align(fmt_data) && check_bytes_per_second(fmt_data)
-  end
-
-  def check_block_align(%{
-        block_align: block_align,
-        num_channels: num_channels,
-        bits_per_sample: bits_per_sample
-      }) do
-    block_align == num_channels * bits_per_sample / 8
-  end
-
-  def check_bytes_per_second(%{
-        bytes_per_second: bytes_per_second,
-        block_align: block_align,
-        sample_rate: sample_rate
-      }) do
-    bytes_per_second == block_align * sample_rate
   end
 end

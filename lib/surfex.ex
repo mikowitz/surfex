@@ -21,6 +21,11 @@ defmodule Surfex do
   """
   alias Surfex.WavFile
 
+  @type channel :: [number()]
+  @type channels :: [channel()]
+  @type file_write_response :: :ok | {:error, File.posix()}
+
+  @spec lower_volume(String.t(), String.t(), number | nil) :: file_write_response()
   def lower_volume(infile, outfile, percentage \\ 0.5) do
     process(infile, outfile, fn channels ->
       Enum.map(channels, fn channel ->
@@ -29,12 +34,14 @@ defmodule Surfex do
     end)
   end
 
+  @spec reverse(String.t(), String.t()) :: file_write_response()
   def reverse(infile, outfile) do
     process(infile, outfile, fn channels ->
       Enum.map(channels, &Enum.reverse/1)
     end)
   end
 
+  @spec process(String.t(), String.t(), (channels() -> channels())) :: file_write_response()
   def process(infile, outfile, processing_function) do
     infile
     |> WavFile.read()

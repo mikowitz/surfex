@@ -1,4 +1,6 @@
 defmodule SurfexTestCase do
+  @moduledoc false
+
   import ExUnit.Assertions
 
   defmacro assert_pcm_metadata(filename) do

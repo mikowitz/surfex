@@ -15,13 +15,14 @@ defmodule Surfex.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: extra_applications(Mix.env())
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
@@ -29,4 +30,7 @@ defmodule Surfex.MixProject do
   defp compiler_paths(:test), do: ["test/support"] ++ compiler_paths(:prod)
   defp compiler_paths(:dev), do: compiler_paths(:test)
   defp compiler_paths(_), do: ["lib"]
+
+  defp extra_applications(:test), do: [:logger, :crypto]
+  defp extra_applications(_), do: [:logger]
 end
