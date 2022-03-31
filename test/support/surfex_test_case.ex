@@ -14,7 +14,7 @@ defmodule SurfexTestCase do
   def do_assert_pcm_metadata(filename) do
     [[_, bit_depth, sample_rate, mono_or_stereo]] = Regex.scan(~r/(\d\d)(\d\d)(m|s)/, filename)
 
-    wav = Surfex.WavFile.read(filename)
+    wav = Surfex.read(filename)
 
     {expected_bit_depth, ""} = Integer.parse(bit_depth)
 

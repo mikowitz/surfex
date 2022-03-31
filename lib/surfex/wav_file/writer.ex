@@ -1,4 +1,6 @@
 defmodule Surfex.WavFile.Writer do
+  @moduledoc false
+
   import Surfex.WavFile.BitstringHelpers
 
   def write(%Surfex.WavFile{} = wav, filename) do

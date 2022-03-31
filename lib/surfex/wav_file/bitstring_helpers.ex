@@ -1,7 +1,5 @@
 defmodule Surfex.WavFile.BitstringHelpers do
-  @moduledoc """
-  Helper macros to make bitstring manipulation a bit more compact.
-  """
+  @moduledoc false
 
   @doc """
   Shorthand for an integer encoded in 32 bits in little-endian format

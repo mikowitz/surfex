@@ -8,7 +8,8 @@ defmodule Surfex.MixProject do
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      elixirc_paths: compiler_paths(Mix.env())
+      elixirc_paths: compiler_paths(Mix.env()),
+      docs: docs()
     ]
   end
 
@@ -33,4 +34,10 @@ defmodule Surfex.MixProject do
 
   defp extra_applications(:test), do: [:logger, :crypto]
   defp extra_applications(_), do: [:logger]
+
+  defp docs do
+    [
+      main: Surfex
+    ]
+  end
 end

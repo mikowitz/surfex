@@ -51,58 +51,41 @@ defmodule Surfex.WavFileTest do
 
   describe "writing to file" do
     test "writing a read file back directly returns the same file" do
-      wav = WavFile.read("priv/samples/pcm0808m.wav")
-
-      :ok = WavFile.write(wav, "example-pcm0808m.wav")
-
-      wav2 = WavFile.read("example-pcm0808m.wav")
-
-      assert wav == wav2
-
-      :ok = File.rm("example-pcm0808m.wav")
+      test_read_write_read("pcm0808m.wav")
     end
 
     test "writing a read stereo file back directly returns the same file" do
-      wav = WavFile.read("priv/samples/pcm0808s.wav")
-
-      :ok = WavFile.write(wav, "example-pcm0808s.wav")
-
-      wav2 = WavFile.read("example-pcm0808s.wav")
-
-      assert wav == wav2
-
-      :ok = File.rm("example-pcm0808s.wav")
+      test_read_write_read("pcm0808s.wav")
     end
 
     test "writing a read mono extensible file back directly returns the same file" do
-      wav = WavFile.read("priv/samples/pcm3244m.wav")
-
-      :ok = WavFile.write(wav, "example-pcm3244m.wav")
-
-      wav2 = WavFile.read("example-pcm3244m.wav")
-
-      assert wav == wav2
-
-      :ok = File.rm("example-pcm3244m.wav")
+      test_read_write_read("pcm3244m.wav")
     end
 
     test "writing a read stereo extensible file back directly returns the same file" do
-      wav = WavFile.read("priv/samples/pcm2444s.wav")
-
-      :ok = WavFile.write(wav, "example-pcm2444s.wav")
-
-      wav2 = WavFile.read("example-pcm2444s.wav")
-
-      assert wav == wav2
-
-      :ok = File.rm("example-pcm2444s.wav")
+      test_read_write_read("pcm2444s.wav")
     end
+  end
+
+  def test_read_write_read(filename) do
+    source = "priv/samples/" <> filename
+    dest = "example-" <> filename
+
+    wav = Surfex.read(source)
+
+    :ok = Surfex.write(wav, dest)
+
+    wav2 = Surfex.read(dest)
+
+    assert wav == wav2
+
+    :ok = File.rm(dest)
   end
 
   import WavFile.AudioDataFunctions
 
   test "splitting mono audio data" do
-    wav = WavFile.read("priv/samples/pcm0808m.wav")
+    wav = Surfex.read("priv/samples/pcm0808m.wav")
 
     audio_data = split_audio_data_into_channels(wav)
 
@@ -111,7 +94,7 @@ defmodule Surfex.WavFileTest do
   end
 
   test "restoring mono audio data" do
-    wav = WavFile.read("priv/samples/pcm0808m.wav")
+    wav = Surfex.read("priv/samples/pcm0808m.wav")
 
     split_audio_data = split_audio_data_into_channels(wav)
 
@@ -121,7 +104,7 @@ defmodule Surfex.WavFileTest do
   end
 
   test "splitting stereo audio data" do
-    wav = WavFile.read("priv/samples/pcm0808s.wav")
+    wav = Surfex.read("priv/samples/pcm0808s.wav")
 
     audio_data = split_audio_data_into_channels(wav)
 
@@ -130,7 +113,7 @@ defmodule Surfex.WavFileTest do
   end
 
   test "restoring stereo audio data" do
-    wav = WavFile.read("priv/samples/pcm0808s.wav")
+    wav = Surfex.read("priv/samples/pcm0808s.wav")
 
     split_audio_data = split_audio_data_into_channels(wav)
 

@@ -1,4 +1,6 @@
 defmodule Surfex.WavFile.AudioDataFunctions do
+  @moduledoc false
+
   @doc """
   Splits raw audio binary data into its component channels, decoded into integers.
   """

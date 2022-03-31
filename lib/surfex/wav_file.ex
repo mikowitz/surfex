@@ -4,7 +4,6 @@ defmodule Surfex.WavFile do
   """
 
   import Surfex.WavFile.{AudioDataFunctions}
-  alias Surfex.WavFile.{Reader, Writer}
 
   defstruct [
     :audio_format,
@@ -31,17 +30,30 @@ defmodule Surfex.WavFile do
         }
 
   @doc """
-  Attempts to read a WAV file into a `WavFile` struct in memory.
-  """
-  @spec read(String.t()) :: __MODULE__.t() | {:error, String.t()}
-  defdelegate read(filename), to: Reader
+  Splits the audio data stored in the struct into its constituent channels,
+  run those channels through the given `processing_function`, reconstitutes
+  them into a single block of binary audio data, and returns a new `WavFile`
+  struct containing the new audio data.
 
-  @doc """
-  Attempts to write a `WavFile` struct to disk at the given filename
-  """
-  @spec write(__MODULE__.t(), String.t()) :: Surfex.file_write_response()
-  defdelegate write(wav, filename), to: Writer
+  ## Example
 
+  This example reverses only the even (0-indexed) channels of a WAV file.
+
+  ```
+  wav = Surfex.read("original.wav")
+  Surfex.WavFile.process(wav, fn channels ->
+    channels
+    |> Enum.with_index()
+    |> Enum.map(fn {channel, index} ->
+      case rem(index, 0) do
+        0 -> Enum.reverse(channel)
+        1 -> channel
+      end
+    end)
+  end)
+  ```
+
+  """
   @spec process(__MODULE__.t(), (Surfex.channels() -> Surfex.channels())) :: __MODULE__.t()
   def process(%__MODULE__{} = wav, processing_function) do
     channels = split_audio_data_into_channels(wav)

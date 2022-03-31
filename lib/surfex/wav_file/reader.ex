@@ -1,4 +1,6 @@
 defmodule Surfex.WavFile.Reader do
+  @moduledoc false
+
   import Surfex.WavFile.BitstringHelpers
 
   def read(filename) do
