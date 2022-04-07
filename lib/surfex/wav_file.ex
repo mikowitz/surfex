@@ -63,7 +63,8 @@ defmodule Surfex.WavFile do
     audio_data =
       restore_audio_data_from_channels(
         processed_audio_data,
-        wav.bits_per_sample
+        wav.bits_per_sample,
+        wav.audio_format
       )
 
     %{wav | data: audio_data}
