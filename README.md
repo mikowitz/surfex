@@ -3,8 +3,9 @@
 # Surfex
 
 `Surfex` is a library for manipulating WAV files. It can handle uncompressed
-PCM bit depths of 8, 16, 24, or 32, with any number of channels. It cannot
-currently handle compressed WAV files.
+WAV files encoded with integers at bit depths 8, 16, 24, or 32, or IEEE floats
+at bit depth 32 or 64, with any number of channels. It cannot currently handle
+compressed WAV files.
 
 The public API is contained in this `Surfex` module. It currently provides
 functions for reading a WAV file into a data structure in memory, writing
